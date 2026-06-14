@@ -13,6 +13,7 @@ model User {
   tutor             Tutor?
   bookingsAsStudent Booking[] @relation("StudentBookings")
   reviews           Review[]  @relation("StudentReviews")
+  payment           Payment[] @relation("StudentPayments")
 
   sessions Session[]
   accounts Account[]

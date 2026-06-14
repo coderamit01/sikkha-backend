@@ -4,15 +4,14 @@ model Payment {
   studentId             String
   stripePaymentIntentId String        @unique
   amount                Decimal       @db.Decimal(10, 2)
-  currency              String        @default("usd")
+  currency              String        @default("bdt")
   status                PaymentStatus @default(PENDING)
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
 
   booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  student User    @relation("StudentPayments", fields: [studentId], references: [id])
+  student User    @relation("StudentPayments", fields: [studentId], references: [id], onDelete: Cascade)
 
   @@index([studentId])
   @@map("payments")
 }
-

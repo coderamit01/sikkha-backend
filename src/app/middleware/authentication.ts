@@ -1,5 +1,5 @@
 import { Request, NextFunction, Response } from "express";
-import { auth, UserRole } from "../lib/auth";
+import { UserRole } from "../lib/auth";
 import { AppError } from "../helpers/appError";
 import { CookieUtils } from "../utils/cookies";
 import { JwtUtils } from "../utils/jwt";

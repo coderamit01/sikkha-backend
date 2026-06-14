@@ -28,8 +28,12 @@ const loginUser = catchAsync(
     const result = await authService.loginUser(payload);
     const { accessToken, refreshToken, token, ...rest } = result;
 
+    tokenUtils.setAccessTokenCookie(res, accessToken)
+    tokenUtils.setRefreshTokenCookie(res, refreshToken)
+    tokenUtils.setBetterAuthSessionCooke(res, token)
+
     sendResponse(res, {
-      statusCode: 200,
+      statusCode: 200, 
       success: true,
       message: "Login successfully",
       data: {

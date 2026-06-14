@@ -11,7 +11,7 @@
     "seed:admin": "npx tsx src/app/utils/seedAdmin.ts",
     "generate": "npx prisma generate",
     "studio": "npx prisma studio",
-    "migrate:prod": "prisma migrate deploy"
+    "migrate": "npx prisma migrate dev"
   },
   "keywords": [],
   "author": "",

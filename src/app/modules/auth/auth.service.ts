@@ -88,7 +88,7 @@ const getMe = async (userData: IRequestUser) => {
           availability: true,
           bookings: true,
           reviews: true,
-          subjects: true,
+          category: true,
         }
       },
       bookingsAsStudent: true,

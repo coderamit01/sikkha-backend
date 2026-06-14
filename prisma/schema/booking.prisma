@@ -13,6 +13,7 @@ model Booking {
   student      User        @relation("StudentBookings", fields: [studentId], references: [id], onDelete: Cascade)
   availability Availability @relation(fields: [availabilityId], references: [id], onDelete: Cascade)
   review       Review?
+  payment Payment?
 
   @@map("bookings")
   @@unique([availabilityId, scheduledAt])
