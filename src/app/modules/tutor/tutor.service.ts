@@ -165,19 +165,19 @@ const createAvailability = async (user: IRequestUser, payload: ITutorAvailabilit
   const tutor = await prisma.tutor.findUnique({ where: { userId: user.userId } });
   if (!tutor) { throw new AppError("Tutor not found", 404) }
 
-  const start = new Date(startTime);
-  const end = new Date(endTime);
-  console.log(startTime, endTime);
-  return;
-  if (start >= end) { throw new AppError("Ensuring the start time is less than the end time", 400) }
+  const toMinutes = (time: string) => {
+    const [h, m] = time.split(":").map(Number);
+    return h! * 60 + m!;
+  }
 
-  if (start < Date.now()) { throw new AppError("Availability cannot be in the past", 400) }
+  if (toMinutes(startTime) >= toMinutes(endTime)) { throw new AppError("Start time must be before end time", 400); }
 
   const existAvailability = await prisma.availability.findFirst({
     where: {
       tutorId: tutor.id,
-      startTime: { lte: new Date(endTime) },
-      endTime: { gte: new Date(startTime) }
+      day,
+      startTime: { lte: startTime },
+      endTime: { gte: endTime }
     }
   });
 
@@ -193,7 +193,7 @@ const createAvailability = async (user: IRequestUser, payload: ITutorAvailabilit
 }
 
 const updateAvialability = async (user: IRequestUser, availableId: string, payload: Partial<ITutorAvailability>) => {
-  const { startTime, endTime } = payload;
+  const { startTime, endTime, day } = payload;
 
   if (user.role !== UserRole.TUTOR) { throw new AppError("Only tutors can update availability", 403) }
 
@@ -203,33 +203,46 @@ const updateAvialability = async (user: IRequestUser, availableId: string, paylo
 
   if (!tutor) { throw new AppError("You are not a registered tutor", 404) }
 
-  const start = new Date(startTime!).getTime();
-  const end = new Date(endTime!).getTime();
+  const availability = await prisma.availability.findUnique({ where: { id: availableId } });
+  if (!availability) { throw new AppError("Availability not found", 404) }
+  if (availability.tutorId !== tutor.id) { throw new AppError("Unauthorized", 403) }
 
-  if (start >= end) { throw new AppError("Ensuring the start time is less than the end time", 400) }
-
-  if (start < Date.now()) { throw new AppError("Availability cannot be in the past", 400) }
-
-  const existAvailability = await prisma.availability.findFirst({
-    where: {
-      tutorId: tutor.id,
-      id: { not: availableId },
-      startTime: { lte: new Date(endTime!) },
-      endTime: { gte: new Date(startTime!) }
+  const toMinutes = (time: string) => {
+    const [h, m] = time.split(":").map(Number);
+    return h! * 60 + m!;
+  }
+  if (startTime && endTime) {
+    if (toMinutes(startTime) >= toMinutes(endTime)) {
+      throw new AppError("Ensuring the start time is less than the end time", 400)
     }
-  });
+  }
 
-  if (existAvailability) { throw new AppError("Availability overlaps with an existing slot", 409) }
 
-  const result = await prisma.availability.update({
+
+  if (startTime || endTime || day) {
+    const effectiveStart = startTime ?? availability.startTime;
+    const effectiveEnd = endTime ?? availability.endTime;
+    const effectiveDay = day ?? availability.day;
+
+    const overlap = await prisma.availability.findFirst({
+      where: {
+        tutorId: tutor.id,
+        id: { not: availableId },
+        day: effectiveDay,
+        startTime: { lte: effectiveEnd },
+        endTime: { gte: effectiveStart }
+      }
+    });
+
+    if (overlap) { throw new AppError("Availability overlaps with an existing slot", 409) }
+  }
+
+  return await prisma.availability.update({
     where: {
       id: availableId
     },
-    data: {
-      ...payload
-    }
+    data: payload
   })
-  return result;
 };
 
 // Tutor only can delete their own availability.
