@@ -1,4 +1,4 @@
-import { Role } from "../../generated/prisma/enums";
+import { DayOfWeek, Role } from "../../generated/prisma/enums";
 
 
 export interface IRequestUser {
@@ -9,8 +9,9 @@ export interface IRequestUser {
 }
 
 export interface ITutorAvailability {
-  startTime: Date;
-  endTime: Date;
+  day: DayOfWeek
+  startTime: string;
+  endTime: string;
 }
 
 export interface IUpdateTutorAvailability {

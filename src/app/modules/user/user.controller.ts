@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { AppError } from "../../helpers/appError";
 import { userService } from "./user.service";
 import { User } from "../../../generated/prisma/client";
 import { UserRole } from "../../lib/auth";

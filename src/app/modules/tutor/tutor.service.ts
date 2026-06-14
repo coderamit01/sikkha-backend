@@ -16,7 +16,7 @@ const getAllTutors = async (filters: TutorFilters = {}, page: number = 1, limit:
   if (search) {
     addFilter.push({
       OR: [
-        { name: { contains: search, mode: "insensitive" } },
+        { user: { name: { contains: search, mode: "insensitive" } } },
         { user: { bio: { contains: search, mode: "insensitive" } } },
       ]
     })
@@ -25,16 +25,14 @@ const getAllTutors = async (filters: TutorFilters = {}, page: number = 1, limit:
   if (categories.length > 0) {
     addFilter.push(
       {
-        subjects: {
+        category: {
           some: {
-            category: {
-              OR: categories.map((cat) => ({
-                name: {
-                  equals: cat,
-                  mode: "insensitive"
-                }
-              }))
-            }
+            OR: categories.map((cat) => ({
+              name: {
+                equals: cat,
+                mode: "insensitive"
+              }
+            }))
           }
         }
       }
@@ -69,7 +67,7 @@ const getAllTutors = async (filters: TutorFilters = {}, page: number = 1, limit:
     take: limit,
     include: {
       user: true,
-      subjects: { select: { category: true } },
+      category: true,
       bookings: true,
       reviews: true,
       availability: true
@@ -113,15 +111,9 @@ const getTutorById = async (id: string) => {
     },
     include: {
       user: true,
-      subjects: {
-        select: { category: true }
-      },
+      category: true,
       bookings: true,
-      reviews: {
-        include: {
-          student: true
-        }
-      },
+      reviews: true,
       availability: true
     }
   });
@@ -138,27 +130,45 @@ const updateProfile = async (user: IRequestUser, payload: Partial<TutorUpdatePro
   if (!tutor) {
     throw new AppError("Tutor not found", 404);
   }
+  const { name, email, image, bio, ...tutorData } = payload
+  const result = await prisma.$transaction(async (tx) => {
+    await tx.user.update({
+      where: { id: user.userId },
+      data: {
+        ...(name && { name }),
+        ...(email && { email }),
+        ...(image && { image }),
+        ...(bio && { bio })
+      },
+    });
 
-  return await prisma.tutor.update({
-    where: { id: tutor.id },
-    data: payload,
+    const updatedTutor = await tx.tutor.update({
+      where: { id: tutor.id },
+      data: tutorData,
+      include: {
+        user: true
+      }
+    });
+
+    return updatedTutor;
   });
+
+  return result;
+
 };
 
 const createAvailability = async (user: IRequestUser, payload: ITutorAvailability) => {
-  const { startTime, endTime } = payload;
+  const { startTime, endTime, day } = payload;
 
   if (user.role !== UserRole.TUTOR) { throw new AppError("Only tutors can create availability", 403) }
 
-  const tutor = await prisma.tutor.findUnique({
-    where: { userId: user.userId }
-  });
-
+  const tutor = await prisma.tutor.findUnique({ where: { userId: user.userId } });
   if (!tutor) { throw new AppError("Tutor not found", 404) }
 
-  const start = new Date(startTime).getTime();
-  const end = new Date(endTime).getTime();
-
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+  console.log(startTime, endTime);
+  return;
   if (start >= end) { throw new AppError("Ensuring the start time is less than the end time", 400) }
 
   if (start < Date.now()) { throw new AppError("Availability cannot be in the past", 400) }

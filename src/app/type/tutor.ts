@@ -14,6 +14,7 @@ export interface TutorUpdateProfile {
   name: string;
   email: string;
   image?: string;
+  bio?: string,
   contactNumber?: string;
   gender: Gender;
   userId: string;

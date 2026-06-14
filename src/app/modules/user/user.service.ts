@@ -3,7 +3,7 @@ import { AppError } from "../../helpers/appError";
 import { IRequestUser } from "../../interface/requestUser.interface";
 import { auth, UserRole } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
-import { IRegisterPayload, IUpdateStatus } from "./user.interface";
+import { IRegisterPayload } from "./user.interface";
 
 
 const creatTutor = async (payload: IRegisterPayload) => {
@@ -29,8 +29,6 @@ const creatTutor = async (payload: IRegisterPayload) => {
       const tutorData = await tx.tutor.create({
         data: {
           userId: userData.user.id,
-          email: payload.email,
-          name: payload.name,
           gender: payload.gender,
         }
       })
