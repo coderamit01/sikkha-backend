@@ -70,43 +70,43 @@ const updateProfile = catchAsync(
 
   })
 
-const createAvailablity = catchAsync(
+const createAvailability = catchAsync(
   async (req: Request, res: Response) => {
     const user = req?.user as IRequestUser;
     const payload: ITutorAvailability = req.body;
-    const result = await tutorService.createAvailablity(user, payload);
+    const result = await tutorService.createAvailability(user, payload);
     sendResponse(res, {
       statusCode: 201,
       success: true,
-      message: "Availablity create succussfully",
+      message: "Availability create succussfully",
       data: result,
     });
   })
 
-const updateAvialablity = catchAsync(
+const updateAvialability = catchAsync(
   async (req: Request, res: Response) => {
     const user = req?.user as IRequestUser;
     const { availableId } = req.params as { availableId: string };
     const payload: ITutorAvailability = req.body;
-    const result = await tutorService.updateAvialablity(user, availableId, payload);
+    const result = await tutorService.updateAvialability(user, availableId, payload);
     sendResponse(res, {
       statusCode: 201,
       success: true,
-      message: "Availablity updated succussfully",
+      message: "Availability updated succussfully",
       data: result,
     });
   }
 )
 
-const deleteAvialablity = catchAsync(
+const deleteAvialability = catchAsync(
   async (req: Request, res: Response) => {
     const user = req?.user as IRequestUser;
     const { availableId } = req.params as { availableId: string };
-    const result = await tutorService.deleteAvialablity(user, availableId);
+    const result = await tutorService.deleteAvialability(user, availableId);
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      message: "Availablity deleted succussfully",
+      message: "Availability deleted succussfully",
       data: result,
     });
   }
@@ -116,8 +116,8 @@ export const tutorController = {
   getAllTutors,
   updateProfile,
   getAllAvailability,
-  createAvailablity,
-  updateAvialablity,
+  createAvailability,
+  updateAvialability,
   getTutorById,
-  deleteAvialablity,
+  deleteAvialability,
 };

@@ -169,25 +169,25 @@ const createBooking = async (user: IRequestUser, payload: IBooking) => {
     throw new AppError("You cannot book your own session", 400);
   }
 
-  const availablity = await prisma.availablity.findFirst({
+  const availability = await prisma.availability.findFirst({
     where: {
       id: payload.availabilityId
     }
   })
 
-  if (!availablity) {
+  if (!availability) {
     throw new AppError("Tutor not available at this time", 400);
   }
 
-  if (availablity.isBooked) {
+  if (availability.isBooked) {
     throw new AppError("This slot is already booked", 400);
   }
 
-  if (availablity.tutorId !== payload.tutorId) {
+  if (availability.tutorId !== payload.tutorId) {
     throw new AppError("This slot does not belong to the selected tutor", 400);
   }
 
-  const diffHours = (availablity.endTime.getTime() - availablity.startTime.getTime()) / (1000 * 60 * 60);
+  const diffHours = (availability.endTime.getTime() - availability.startTime.getTime()) / (1000 * 60 * 60);
   const totalPrice = Number(tutor.hourlyRate) * diffHours;
 
   const result = await prisma.booking.create({
@@ -195,12 +195,12 @@ const createBooking = async (user: IRequestUser, payload: IBooking) => {
       studentId: user.userId,
       tutorId: payload.tutorId,
       availabilityId: payload.availabilityId,
-      scheduleAt: availablity.startTime,
+      scheduleAt: availability.startTime,
       totalPrice,
     },
   });
 
-  await prisma.availablity.update({
+  await prisma.availability.update({
     where: { id: payload.availabilityId },
     data: { isBooked: true }
   })
@@ -263,14 +263,14 @@ const updateBookingStatus = async (user: IRequestUser, bookId: string, status: B
   });
 
   if (status === BookingStatus.CANCELLED) {
-    await prisma.availablity.update({
+    await prisma.availability.update({
       where: { id: booking.availabilityId },
       data: { isBooked: false }
     })
   }
 
   if (status === BookingStatus.COMPLETED) {
-    await prisma.availablity.update({
+    await prisma.availability.update({
       where: { id: booking.availabilityId },
       data: { isBooked: false }
     })

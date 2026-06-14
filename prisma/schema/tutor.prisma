@@ -3,13 +3,14 @@ model Tutor {
   name            String
   email           String   @unique
   image           String?
+  institute String?
+  department String?
   contactNumber   String?
   gender          Gender
   userId          String   @unique
   hourlyRate      Decimal? @default(0) @db.Decimal(10, 2)
   yearsExperience Decimal? @default(0) @db.Decimal(10, 2)
   averageRating   Decimal? @default(0) @db.Decimal(3, 2)
-  isAvailable     Boolean  @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -17,7 +18,7 @@ model Tutor {
   user        User           @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   subjects    TutorSubject[]
   bookings    Booking[]      @relation("TutorBookings")
-  availablity Availablity[]
+  availability Availability[]
   reviews     Review[]
 
   @@map("tutors")

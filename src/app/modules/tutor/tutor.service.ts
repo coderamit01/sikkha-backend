@@ -72,7 +72,7 @@ const getAllTutors = async (filters: TutorFilters = {}, page: number = 1, limit:
       subjects: { select: { category: true } },
       bookings: true,
       reviews: true,
-      availablity: true
+      availability: true
     }
   });
 
@@ -98,7 +98,7 @@ const getAllAvailability = async (user: IRequestUser) => {
 
   if (!tutor) { throw new AppError("Tutor not found", 404) }
 
-  const result = await prisma.availablity.findMany({
+  const result = await prisma.availability.findMany({
     where: { tutorId: tutor.id },
     orderBy: { createdAt: "asc" }
   });
@@ -122,7 +122,7 @@ const getTutorById = async (id: string) => {
           student: true
         }
       },
-      availablity: true
+      availability: true
     }
   });
 };
@@ -145,7 +145,7 @@ const updateProfile = async (user: IRequestUser, payload: Partial<TutorUpdatePro
   });
 };
 
-const createAvailablity = async (user: IRequestUser, payload: ITutorAvailability) => {
+const createAvailability = async (user: IRequestUser, payload: ITutorAvailability) => {
   const { startTime, endTime } = payload;
 
   if (user.role !== UserRole.TUTOR) { throw new AppError("Only tutors can create availability", 403) }
@@ -163,7 +163,7 @@ const createAvailablity = async (user: IRequestUser, payload: ITutorAvailability
 
   if (start < Date.now()) { throw new AppError("Availability cannot be in the past", 400) }
 
-  const existAvailablity = await prisma.availablity.findFirst({
+  const existAvailability = await prisma.availability.findFirst({
     where: {
       tutorId: tutor.id,
       startTime: { lte: new Date(endTime) },
@@ -171,9 +171,9 @@ const createAvailablity = async (user: IRequestUser, payload: ITutorAvailability
     }
   });
 
-  if (existAvailablity) { throw new AppError("Availability overlaps with an existing slot", 409) }
+  if (existAvailability) { throw new AppError("Availability overlaps with an existing slot", 409) }
 
-  const result = await prisma.availablity.create({
+  const result = await prisma.availability.create({
     data: {
       tutorId: tutor.id,
       ...payload
@@ -182,7 +182,7 @@ const createAvailablity = async (user: IRequestUser, payload: ITutorAvailability
   return result;
 }
 
-const updateAvialablity = async (user: IRequestUser, availableId: string, payload: Partial<ITutorAvailability>) => {
+const updateAvialability = async (user: IRequestUser, availableId: string, payload: Partial<ITutorAvailability>) => {
   const { startTime, endTime } = payload;
 
   if (user.role !== UserRole.TUTOR) { throw new AppError("Only tutors can update availability", 403) }
@@ -200,7 +200,7 @@ const updateAvialablity = async (user: IRequestUser, availableId: string, payloa
 
   if (start < Date.now()) { throw new AppError("Availability cannot be in the past", 400) }
 
-  const existAvailablity = await prisma.availablity.findFirst({
+  const existAvailability = await prisma.availability.findFirst({
     where: {
       tutorId: tutor.id,
       id: { not: availableId },
@@ -209,9 +209,9 @@ const updateAvialablity = async (user: IRequestUser, availableId: string, payloa
     }
   });
 
-  if (existAvailablity) { throw new AppError("Availability overlaps with an existing slot", 409) }
+  if (existAvailability) { throw new AppError("Availability overlaps with an existing slot", 409) }
 
-  const result = await prisma.availablity.update({
+  const result = await prisma.availability.update({
     where: {
       id: availableId
     },
@@ -223,7 +223,7 @@ const updateAvialablity = async (user: IRequestUser, availableId: string, payloa
 };
 
 // Tutor only can delete their own availability.
-const deleteAvialablity = async (user: IRequestUser, availableId: string) => {
+const deleteAvialability = async (user: IRequestUser, availableId: string) => {
 
   if (user.role !== UserRole.TUTOR) {
     throw new AppError("Only tutors can delete availability", 403)
@@ -237,21 +237,21 @@ const deleteAvialablity = async (user: IRequestUser, availableId: string) => {
   if (!tutor) {
     throw new AppError("You are not a registered tutor", 404)
   }
-  const availablity = await prisma.availablity.findUnique({
+  const availability = await prisma.availability.findUnique({
     where: {
       id: availableId
     }
   })
 
-  if (!availablity) {
+  if (!availability) {
     throw new AppError("Availability not found", 404)
   }
 
-  if (availablity.tutorId !== tutor.id) {
+  if (availability.tutorId !== tutor.id) {
     throw new AppError("You are not authorized to delete this availability", 403)
   }
 
-  const result = await prisma.availablity.delete({
+  const result = await prisma.availability.delete({
     where: {
       id: availableId,
     }
@@ -263,8 +263,8 @@ export const tutorService = {
   getAllTutors,
   updateProfile,
   getAllAvailability,
-  createAvailablity,
-  updateAvialablity,
+  createAvailability,
+  updateAvialability,
   getTutorById,
-  deleteAvialablity,
+  deleteAvialability,
 };

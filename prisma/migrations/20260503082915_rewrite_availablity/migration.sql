@@ -1,14 +1,14 @@
 /*
   Warnings:
 
-  - You are about to drop the `availablity` table. If the table is not empty, all the data it contains will be lost.
+  - You are about to drop the `availability` table. If the table is not empty, all the data it contains will be lost.
 
 */
 -- DropForeignKey
-ALTER TABLE "availablity" DROP CONSTRAINT "availablity_tutorId_fkey";
+ALTER TABLE "availability" DROP CONSTRAINT "availability_tutorId_fkey";
 
 -- DropTable
-DROP TABLE "availablity";
+DROP TABLE "availability";
 
 -- DropEnum
 DROP TYPE "Week";

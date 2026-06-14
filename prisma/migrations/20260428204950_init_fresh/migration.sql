@@ -5,7 +5,7 @@ CREATE TYPE "Role" AS ENUM ('STUDENT', 'TUTOR', 'ADMIN');
 CREATE TYPE "BookingStatus" AS ENUM ('CONFIRMED', 'COMPLETED', 'CANCELLED');
 
 -- CreateTable
-CREATE TABLE "availablity" (
+CREATE TABLE "availability" (
     "id" TEXT NOT NULL,
     "tutorId" TEXT NOT NULL,
     "dayOfWeek" INTEGER NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE "availablity" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "availablity_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "availability_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -174,7 +174,7 @@ CREATE INDEX "account_userId_idx" ON "account"("userId");
 CREATE INDEX "verification_identifier_idx" ON "verification"("identifier");
 
 -- AddForeignKey
-ALTER TABLE "availablity" ADD CONSTRAINT "availablity_tutorId_fkey" FOREIGN KEY ("tutorId") REFERENCES "tutors"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "availability" ADD CONSTRAINT "availability_tutorId_fkey" FOREIGN KEY ("tutorId") REFERENCES "tutors"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "bookings" ADD CONSTRAINT "bookings_tutorId_fkey" FOREIGN KEY ("tutorId") REFERENCES "tutors"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

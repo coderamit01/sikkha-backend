@@ -85,7 +85,7 @@ const getMe = async (userData: IRequestUser) => {
     include: {
       tutor: {
         include: {
-          availablity: true,
+          availability: true,
           bookings: true,
           reviews: true,
           subjects: true,

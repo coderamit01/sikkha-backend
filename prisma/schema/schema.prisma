@@ -19,7 +19,25 @@ enum Gender {
 }
 
 enum BookingStatus {
+  PENDING
   CONFIRMED
   COMPLETED
   CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
 }
