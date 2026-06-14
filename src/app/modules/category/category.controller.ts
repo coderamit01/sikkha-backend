@@ -11,7 +11,7 @@ const getAllCategory = catchAsync(
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      message: "Retrive categories successfully",
+      message: "Retrive all categories successfully",
       data: result
     })
 }

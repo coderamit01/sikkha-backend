@@ -2,9 +2,7 @@ import { prisma } from "../../lib/prisma";
 import { typeCategory } from "../../type/category";
 
 const getAllCategory = async() => {
-  return await prisma.category.findMany({
-    include: {subjects: true}
-  });  
+  return await prisma.category.findMany();  
 }
 
 const getSingleCategory = async(id:string) => {
