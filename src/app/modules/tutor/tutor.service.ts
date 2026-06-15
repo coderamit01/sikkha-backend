@@ -130,7 +130,21 @@ const updateProfile = async (user: IRequestUser, payload: Partial<TutorUpdatePro
   if (!tutor) {
     throw new AppError("Tutor not found", 404);
   }
-  const { name, email, image, bio, ...tutorData } = payload
+  const { categoryIds, name, email, image, bio, ...tutorData } = payload;
+
+  if (categoryIds?.length) {
+    const categories = await prisma.category.findMany({
+      where: {
+        id: { in: categoryIds }
+      }
+    })
+
+    if (categories.length !== categoryIds.length) {
+      throw new AppError("One or more categories are invalid", 400)
+    }
+  }
+
+
   const result = await prisma.$transaction(async (tx) => {
     await tx.user.update({
       where: { id: user.userId },
@@ -144,7 +158,14 @@ const updateProfile = async (user: IRequestUser, payload: Partial<TutorUpdatePro
 
     const updatedTutor = await tx.tutor.update({
       where: { id: tutor.id },
-      data: tutorData,
+      data: {
+        ...tutorData,
+        ...(categoryIds && {
+          category: {
+            set: categoryIds.map((id) => ({id}))
+          }
+        })
+      },
       include: {
         user: true
       }

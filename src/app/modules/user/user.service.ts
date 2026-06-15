@@ -52,7 +52,7 @@ const getAllUser = async (user: IRequestUser) => {
   });
 };
 
-const updateUserStatus = async (user: IRequestUser, userId: string, userStatus: boolean) => {
+const updateUserStatus = async (user: IRequestUser, user_id: string, userStatus: boolean) => {
 
   if (user.role !== UserRole.ADMIN) {
     throw new AppError("Access Denied!", 403)
@@ -60,7 +60,7 @@ const updateUserStatus = async (user: IRequestUser, userId: string, userStatus: 
 
   return await prisma.user.update({
     where: {
-      id: userId
+      id: user_id
     },
     data: {
       isBanned: userStatus

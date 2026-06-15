@@ -53,6 +53,7 @@ const updateUserStatus = catchAsync(
     const user = req?.user;
     const { user_id } = req.params as { user_id: string }
     const { isBanned } = req.body as { isBanned: boolean };
+
     const result = await userService.updateUserStatus(user as IRequestUser, user_id, isBanned)
     sendResponse(res, {
       statusCode: 200,
