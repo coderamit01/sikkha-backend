@@ -39,11 +39,8 @@ const getAllBooking = async (user: IRequestUser) => {
     include: {
       tutor: {
         select: {
-          name: true,
-          email: true,
           gender: true,
-          image: true,
-          subjects: { include: { category: true } }
+          category: true
         }
       },
       student: {
@@ -82,11 +79,9 @@ const getBookingById = async (user: IRequestUser, bookingId: string) => {
     include: {
       tutor: {
         select: {
-          name: true,
-          email: true,
           gender: true,
-          image: true
-        },
+          user: true
+        }
       },
       student: {
         select: {
@@ -161,10 +156,6 @@ const createBooking = async (user: IRequestUser, payload: IBooking) => {
     throw new AppError("Tutor not found", 404);
   }
 
-  if (!tutor.isAvailable) {
-    throw new AppError("Tutor is not currently accepting bookings", 400);
-  }
-
   if (tutor.userId === user.userId) {
     throw new AppError("You cannot book your own session", 400);
   }
@@ -187,7 +178,13 @@ const createBooking = async (user: IRequestUser, payload: IBooking) => {
     throw new AppError("This slot does not belong to the selected tutor", 400);
   }
 
-  const diffHours = (availability.endTime.getTime() - availability.startTime.getTime()) / (1000 * 60 * 60);
+  const toMinutes = (time: string) => {
+    const [h, m] = time.split(":").map(Number);
+    return h! * 60 + m!;
+  }
+
+
+  const diffHours = ( toMinutes(availability.endTime) - toMinutes(availability.startTime)) / 60;
   const totalPrice = Number(tutor.hourlyRate) * diffHours;
 
   const result = await prisma.booking.create({
@@ -195,7 +192,7 @@ const createBooking = async (user: IRequestUser, payload: IBooking) => {
       studentId: user.userId,
       tutorId: payload.tutorId,
       availabilityId: payload.availabilityId,
-      scheduleAt: availability.startTime,
+      scheduledAt: new Date(),
       totalPrice,
     },
   });
@@ -250,7 +247,7 @@ const updateBookingStatus = async (user: IRequestUser, bookId: string, status: B
     }
   }
   else if (user.role === UserRole.ADMIN) {
-    if (![BookingStatus.CONFIRMED, BookingStatus.CANCELLED, BookingStatus.COMPLETED].includes(status)) {
+    if (![BookingStatus.CONFIRMED, BookingStatus.CANCELLED, BookingStatus.COMPLETED, BookingStatus.PENDING].includes(status)) {
       throw new AppError("Invalid status update", 400);
     }
   }
