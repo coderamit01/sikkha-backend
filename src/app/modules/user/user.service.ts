@@ -68,7 +68,7 @@ const updateUserStatus = async (user: IRequestUser, user_id: string, userStatus:
   });
 };
 
-const updateUser = async (user: IRequestUser, data: User, isAdmin: boolean) => {
+const updateUser = async (user: IRequestUser, data: Partial<User>, isAdmin: boolean) => {
 
   const exists = await prisma.user.findUniqueOrThrow({
     where: {

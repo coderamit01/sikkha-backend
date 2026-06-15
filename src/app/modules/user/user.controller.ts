@@ -5,6 +5,7 @@ import { UserRole } from "../../lib/auth";
 import { catchAsync } from "../../shared/catchAsync";
 import { sendResponse } from "../../shared/sendResponse";
 import { IRequestUser } from "../../interface/requestUser.interface";
+import { uploadToCloudinary } from "../../utils/uploadToCloudinary";
 
 const createTutor = catchAsync(
   async (req: Request, res: Response) => {
@@ -34,14 +35,19 @@ const getAllUser = catchAsync(
 
 const updateUser = catchAsync(
   async (req: Request, res: Response) => {
+    const imageUrl = req.file ? await uploadToCloudinary(req.file.buffer, "Shikkha/users") : undefined;
+
     const user = req.user as IRequestUser;
-    const payload: User = req.body;
+    const payload: User = {
+      ...req.body,
+      ...(imageUrl && { image: imageUrl })
+    };
     const isAdmin = user.role === UserRole.ADMIN;
     const result = await userService.updateUser(user, payload, isAdmin);
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      message: "Update User succussfully",
+      message: "Profile updated successfully",
       data: result,
     });
 

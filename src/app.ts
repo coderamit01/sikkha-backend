@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { auth } from "./app/lib/auth";
@@ -19,13 +19,22 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser())
 
+
 app.all("/api/auth", toNodeHandler(auth));
-
-
 app.use("/api/v1", IndexRoutes)
 
 app.use("/", (req, res) => {
   res.json({ message: "SkillBridge API is running!" });
+});
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+
+  res.status(statusCode).json({
+    success: false,
+    message,
+  });
 });
 
 export default app;
