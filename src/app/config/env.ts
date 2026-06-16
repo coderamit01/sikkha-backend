@@ -17,7 +17,9 @@ interface EnvConfig {
   REFRESH_TOKEN_EXPIRES_IN: string,
   CLOUDINARY_CLOUD_NAME: string,
   CLOUDINARY_API_KEY: string,
-  CLOUDINARY_API_SECRET: string
+  CLOUDINARY_API_SECRET: string,
+  STRIPE_SECRET_KEY: string,
+  STRIPE_WEBHOOK_SECRET: string,
 }
 
 const loadEnvVariables = (): EnvConfig => {
@@ -36,8 +38,9 @@ const loadEnvVariables = (): EnvConfig => {
     "REFRESH_TOKEN_EXPIRES_IN",
     "CLOUDINARY_CLOUD_NAME",
     "CLOUDINARY_API_KEY",
-    "CLOUDINARY_API_SECRET"
-
+    "CLOUDINARY_API_SECRET",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_WEBHOOK_SECRET",
   ];
 
   requitedEnvVars.forEach((ev) => {
@@ -60,7 +63,9 @@ const loadEnvVariables = (): EnvConfig => {
     REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN as string,
     CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
     CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
-    CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string
+    CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string,
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY as string,
+    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET as string,
   }
 }
 

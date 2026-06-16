@@ -5,6 +5,7 @@ import { auth } from "./app/lib/auth";
 import { toNodeHandler } from "better-auth/node";
 import { IndexRoutes } from "./app/routes";
 import { envVars } from "./app/config/env";
+import { paymentController } from "./app/modules/payment/payment.controller";
 const app = express();
 
 const corsOptions = {
@@ -15,6 +16,8 @@ const corsOptions = {
   exposedHeaders: ["Set-Cookie"],
 }
 app.use(cors(corsOptions));
+
+app.post("/api/v1/payments/webhook", express.raw({ type: "application/json" }), paymentController.handleWebhook);
 
 app.use(express.json());
 app.use(cookieParser())
