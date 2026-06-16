@@ -4,7 +4,7 @@ import { IRequestUser } from "../../interface/requestUser.interface";
 import { UserRole } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
 import { envVars } from "../../config/env";
-import { PaymentStatus } from "../../../generated/prisma/enums";
+import { BookingStatus, PaymentStatus } from "../../../generated/prisma/enums";
 
 const stripe = new Stripe(envVars.STRIPE_SECRET_KEY);
 
@@ -54,24 +54,24 @@ const handleWebhook = async (payload: Buffer, signature: string) => {
   if (event.type === "payment_intent.succeeded") {
     const payment = await prisma.payment.update({
       where: { stripePaymentIntentId: paymentIntent.id },
-      data: { status: "SUCCEEDED" },
+      data: { status:  PaymentStatus.SUCCEEDED },
     });
 
     await prisma.booking.update({
       where: { id: payment.bookingId },
-      data: { status: "CONFIRMED" },
+      data: { status: BookingStatus.CONFIRMED },
     });
   }
 
   if (event.type === "payment_intent.payment_failed") {
     const payment = await prisma.payment.update({
       where: { stripePaymentIntentId: paymentIntent.id },
-      data: { status: "FAILED" },
+      data: { status: PaymentStatus.FAILED },
     });
 
     const booking = await prisma.booking.update({
       where: { id: payment.bookingId },
-      data: { status: "CANCELLED" },
+      data: { status: BookingStatus.CANCELLED },
     });
 
     await prisma.availability.update({
