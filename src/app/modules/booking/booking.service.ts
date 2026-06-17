@@ -244,7 +244,7 @@ const updateBookingStatus = async (user: IRequestUser, bookId: string, status: B
     if (booking.tutorId !== tutor.id) {
       throw new AppError("You are not authorized to update this booking", 403);
     }
-    if (status !== BookingStatus.COMPLETED) {
+    if (status !== BookingStatus.CONFIRMED && status !== BookingStatus.COMPLETED) {
       throw new AppError("Tutors can only confirm or complete the booking", 403);
     }
   }
