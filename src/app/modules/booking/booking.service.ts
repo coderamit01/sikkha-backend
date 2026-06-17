@@ -40,7 +40,8 @@ const getAllBooking = async (user: IRequestUser) => {
       tutor: {
         select: {
           gender: true,
-          category: true
+          category: true,
+          user: true
         }
       },
       student: {
@@ -52,6 +53,7 @@ const getAllBooking = async (user: IRequestUser) => {
       },
       availability: {
         select: {
+          day: true,
           startTime: true,
           endTime: true
         }
@@ -184,7 +186,7 @@ const createBooking = async (user: IRequestUser, payload: IBooking) => {
   }
 
 
-  const diffHours = ( toMinutes(availability.endTime) - toMinutes(availability.startTime)) / 60;
+  const diffHours = (toMinutes(availability.endTime) - toMinutes(availability.startTime)) / 60;
   const totalPrice = Number(tutor.hourlyRate) * diffHours;
 
   const result = await prisma.booking.create({
