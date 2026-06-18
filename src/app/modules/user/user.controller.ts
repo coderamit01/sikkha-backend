@@ -38,12 +38,13 @@ const updateUser = catchAsync(
     const imageUrl = req.file ? await uploadToCloudinary(req.file.buffer, "Shikkha/users") : undefined;
 
     const user = req.user as IRequestUser;
+    const { updateUserId } = req.params as { updateUserId: string }
     const payload: User = {
       ...req.body,
       ...(imageUrl && { image: imageUrl })
     };
     const isAdmin = user.role === UserRole.ADMIN;
-    const result = await userService.updateUser(user, payload, isAdmin);
+    const result = await userService.updateUser(user, updateUserId, payload, isAdmin);
     sendResponse(res, {
       statusCode: 200,
       success: true,
