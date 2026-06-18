@@ -5,11 +5,14 @@ import { UserRole } from "../../lib/auth";
 
 const router = express.Router();
 
-router.post('/', authentication(UserRole.ADMIN,UserRole.TUTOR),categoryController.createCategory);
+router.post('/', authentication(UserRole.ADMIN, UserRole.TUTOR), categoryController.createCategory);
 router.get('/', categoryController.getAllCategory);
+router.get('/me', authentication(UserRole.TUTOR), categoryController.getMyAllCategory);
+router.post('/me/add', authentication(UserRole.TUTOR), categoryController.addCategoryInProfile);
+router.put('/me/:categoryId', authentication(UserRole.TUTOR), categoryController.deleteCategoryFromProfile);
 router.get('/:categoryId', categoryController.getSingleCategory);
-router.put('/:categoryId', authentication(UserRole.ADMIN,UserRole.TUTOR),categoryController.updateCategory);
-router.delete('/:categoryId', authentication(UserRole.ADMIN,UserRole.TUTOR),categoryController.deleteCategory);
+router.put('/:categoryId', authentication(UserRole.ADMIN, UserRole.TUTOR), categoryController.updateCategory);
+router.delete('/:categoryId', authentication(UserRole.ADMIN, UserRole.TUTOR), categoryController.deleteCategory);
 
 
 export const categoryRoutes = router;
