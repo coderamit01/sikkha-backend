@@ -22,7 +22,7 @@ const createPayment = async (user: IRequestUser, bookingId: string) => {
 
   const paymentIntent = await stripe.paymentIntents.create({
     amount,
-    currency: "bdt",
+    currency: "usd",
     metadata: { bookingId: booking.id, studentId: user.userId },
   });
 
@@ -32,10 +32,10 @@ const createPayment = async (user: IRequestUser, bookingId: string) => {
       studentId: user.userId,
       stripePaymentIntentId: paymentIntent.id,
       amount: booking.totalPrice,
-      currency: "bdt",
+      currency: "usd",
       status: PaymentStatus.PENDING,
     },
-  });
+  }); 1
 
   return { clientSecret: paymentIntent.client_secret, paymentId: payment.id };
 };
@@ -54,12 +54,17 @@ const handleWebhook = async (payload: Buffer, signature: string) => {
   if (event.type === "payment_intent.succeeded") {
     const payment = await prisma.payment.update({
       where: { stripePaymentIntentId: paymentIntent.id },
-      data: { status:  PaymentStatus.SUCCEEDED },
+      data: { status: PaymentStatus.SUCCEEDED },
     });
 
-    await prisma.booking.update({
+    const booking = await prisma.booking.update({
       where: { id: payment.bookingId },
       data: { status: BookingStatus.CONFIRMED },
+    });
+
+    await prisma.availability.update({
+      where: { id: booking.availabilityId },
+      data: { isBooked: true },
     });
   }
 
