@@ -6,7 +6,7 @@ Shikkha is a tutoring marketplace REST API where students can discover tutors, b
 
 | Environment | URL |
 |---|---|
-| Production API | `https://your-production-url.vercel.app/api` |
+| Production API | `https://sikkha-backend.onrender.com/api/v1` |
 
 ## Features
 
